@@ -10,17 +10,31 @@ $method = $_SERVER['REQUEST_METHOD'];
 switch ($method) {
     case "GET":
 
-        $sql = "SELECT * FROM supplier";
+
+        if (isset($_GET['product_id'])) {
+            $product_id_spe = $_GET['product_id'];
+            $sql = "SELECT * FROM product WHERE product_id = :product_id";
+        }
+
+
+        if (!isset($_GET['product_id'])) {
+            $sql = "SELECT * FROM product";
+        }
 
 
         if (isset($sql)) {
             $stmt = $conn->prepare($sql);
 
-            $stmt->execute();
-            $supplier = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (isset($product_id_spe)) {
+                $stmt->bindParam(':product_id', $product_id_spe);
+            }
 
-            echo json_encode($supplier);
+            $stmt->execute();
+            $product = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode($product);
         }
+
 
 
         break;
