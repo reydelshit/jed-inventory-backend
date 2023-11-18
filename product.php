@@ -45,7 +45,7 @@ switch ($method) {
 
     case "POST":
         $product = json_decode(file_get_contents('php://input'));
-        $sql = "INSERT INTO product (supplier_id, product_image, product_name, expiration_date, description, stocks) VALUES (:supplier_id, :product_image, :product_name, :expiration_date, :description, :stocks)";
+        $sql = "INSERT INTO product (supplier_id, product_image, product_name, expiration_date, description, stocks, racks) VALUES (:supplier_id, :product_image, :product_name, :expiration_date, :description, :stocks, :racks)";
         $stmt = $conn->prepare($sql);
 
         $stmt->bindParam(':supplier_id', $product->supplier_id);
@@ -55,6 +55,7 @@ switch ($method) {
         $stmt->bindParam(':expiration_date', $product->expiration_date);
         $stmt->bindParam(':description', $product->description);
         $stmt->bindParam(':stocks', $product->stocks);
+        $stmt->bindParam(':racks', $product->racks);
 
 
 
@@ -88,25 +89,50 @@ switch ($method) {
         break;
 
     case "PUT":
-        $supplier = json_decode(file_get_contents('php://input'));
-        $sql = "UPDATE medication SET status= :status
-                    WHERE medication_id = :medication_id";
+        $product = json_decode(file_get_contents('php://input'));
+        $sql = "UPDATE product SET product_name= :product_name, description = :description, expiration_date = :expiration_date, racks = :racks
+                    WHERE product_id = :product_id";
+
         $stmt = $conn->prepare($sql);
         $updated_at = date('Y-m-d');
-        $stmt->bindParam(':medication_id', $supplier->medication_id);
-        $stmt->bindParam(':status', $supplier->status);
+        $stmt->bindParam(':product_id', $product->product_id);
+        $stmt->bindParam(':product_name', $product->product_name);
+        $stmt->bindParam(':description', $product->description);
+        $stmt->bindParam(':expiration_date', $product->expiration_date);
+        $stmt->bindParam(':racks', $product->racks);
 
 
         if ($stmt->execute()) {
 
             $response = [
                 "status" => "success",
-                "message" => "medication updated successfully"
+                "message" => "product updated successfully"
             ];
         } else {
             $response = [
                 "status" => "error",
-                "message" => "medication update failed"
+                "message" => "product update failed"
+            ];
+        }
+
+        echo json_encode($response);
+        break;
+
+    case "DELETE":
+        $product = json_decode(file_get_contents('php://input'));
+        $sql = "DELETE FROM product WHERE product_id = :product_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':product_id', $product->product_id);
+
+        if ($stmt->execute()) {
+            $response = [
+                "status" => "success",
+                "message" => "product deleted successfully"
+            ];
+        } else {
+            $response = [
+                "status" => "error",
+                "message" => "product delete failed"
             ];
         }
 
