@@ -29,18 +29,36 @@ switch ($method) {
 
     case "POST":
         $stock = json_decode(file_get_contents('php://input'));
-        $sql = "INSERT INTO stock_history (product_name, type, quantity, created_at) VALUES (:product_name, :type, :quantity, :created_at)";
+        $sql = "INSERT INTO stock_history (product_name, type, quantity, created_at, product_id) VALUES (:product_name, :type, :quantity, :created_at, :product_id)";
         $stmt = $conn->prepare($sql);
         $created_at = date('Y-m-d');
         $stmt->bindParam(':product_name', $stock->product_name);
         $stmt->bindParam(':type', $stock->type);
         $stmt->bindParam(':quantity', $stock->quantity);
         $stmt->bindParam(':created_at', $created_at);
-
+        $stmt->bindParam(':product_id', $stock->product_id);
 
 
 
         if ($stmt->execute()) {
+
+            if ($stock->type == "Stock In") {
+                $sql = "UPDATE product SET stocks = stocks + :quantity
+                    WHERE product_id = :product_id";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':quantity', $stock->quantity);
+                $stmt->bindParam(':product_id', $stock->product_id);
+                $stmt->execute();
+            } else {
+                $sql = "UPDATE product SET stocks = stocks - :quantity
+                    WHERE product_id = :product_id";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':quantity', $stock->quantity);
+                $stmt->bindParam(':product_id', $stock->product_id);
+                $stmt->execute();
+            }
+
             $response = [
                 "status" => "success",
                 "message" => "stock successfully"
