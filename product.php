@@ -59,14 +59,28 @@ switch ($method) {
 
 
         if ($stmt->execute()) {
+
+            $last_id = $conn->lastInsertId();
+            $type = "Stock In";
+            $sql3 = "INSERT INTO stock_history (product_name, type, quantity, created_at, product_id) VALUES (:product_name, :type, :quantity, :created_at, :product_id)";
+            $stmt3 = $conn->prepare($sql3);
+            $created_at = date('Y-m-d');
+            $stmt3->bindParam(':product_name', $product->product_name);
+            $stmt3->bindParam(':type', $type);
+            $stmt3->bindParam(':quantity', $product->stocks);
+            $stmt3->bindParam(':created_at', $created_at);
+            $stmt3->bindParam(':product_id', $last_id);
+
+            $stmt3->execute();
+
             $response = [
                 "status" => "success",
-                "message" => "product notification sent successfully"
+                "message" => "product successfully"
             ];
         } else {
             $response = [
                 "status" => "error",
-                "message" => "product notification sent failed"
+                "message" => "product failed"
             ];
         }
 
