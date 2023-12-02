@@ -13,7 +13,7 @@ switch ($method) {
 
         if (isset($_GET['racks'])) {
             $racks_spe = $_GET['racks'];
-            $sql = "SELECT * FROM product INNER JOIN supplier ON supplier.supplier_id = product.supplier_id WHERE racks = :racks";
+            $sql = "SELECT * FROM product LEFT JOIN supplier ON supplier.supplier_id = product.supplier_id WHERE racks = :racks";
         }
 
 

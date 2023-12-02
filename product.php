@@ -13,12 +13,12 @@ switch ($method) {
 
         if (isset($_GET['product_id'])) {
             $product_id_spe = $_GET['product_id'];
-            $sql = "SELECT * FROM product INNER JOIN supplier ON supplier.supplier_id = product.supplier_id WHERE product_id = :product_id";
+            $sql = "SELECT * FROM product LEFT JOIN supplier ON supplier.supplier_id = product.supplier_id WHERE product_id = :product_id";
         }
 
 
         if (!isset($_GET['product_id'])) {
-            $sql = " SELECT * FROM product INNER JOIN supplier ON supplier.supplier_id = product.supplier_id";
+            $sql = " SELECT * FROM product LEFT JOIN supplier ON supplier.supplier_id = product.supplier_id";
         }
 
 
