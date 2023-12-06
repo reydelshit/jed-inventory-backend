@@ -47,7 +47,6 @@ switch ($method) {
         $stmt->bindParam(':supplier_name', $suppl->supplier_name);
         $stmt->bindParam(':product_supplied', $suppl->product_supplied);
         $stmt->bindParam(':address', $suppl->address);
-
         $stmt->bindParam(':phone', $suppl->phone);
 
 
