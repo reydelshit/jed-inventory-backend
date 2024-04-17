@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 class DbConnect
 {
     private $server = 'localhost';
-    private $dbname = 'jed-inventory';
+    private $dbname = 'jed-segura';
     private $user = 'root';
     private $pass = '';
 
