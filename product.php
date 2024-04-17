@@ -13,12 +13,12 @@ switch ($method) {
 
         if (isset($_GET['product_id'])) {
             $product_id_spe = $_GET['product_id'];
-            $sql = "SELECT * FROM product LEFT JOIN supplier ON supplier.supplier_id = product.supplier_id WHERE product_id = :product_id";
+            $sql = "SELECT * FROM product WHERE product_id = :product_id";
         }
 
 
         if (!isset($_GET['product_id'])) {
-            $sql = " SELECT * FROM product LEFT JOIN supplier ON supplier.supplier_id = product.supplier_id";
+            $sql = " SELECT * FROM product ";
         }
 
 
@@ -45,35 +45,19 @@ switch ($method) {
 
     case "POST":
         $product = json_decode(file_get_contents('php://input'));
-        $sql = "INSERT INTO product (supplier_id, product_image, product_name, expiration_date, description, stocks, racks) VALUES (:supplier_id, :product_image, :product_name, :expiration_date, :description, :stocks, :racks)";
+        $sql = "INSERT INTO product (product_image, product_name, expiration_date, description, stocks) VALUES (:product_image, :product_name, :expiration_date, :description, :stocks)";
         $stmt = $conn->prepare($sql);
 
-        $stmt->bindParam(':supplier_id', $product->supplier_id);
         $stmt->bindParam(':product_image', $product->product_image);
         $stmt->bindParam(':product_name', $product->product_name);
 
         $stmt->bindParam(':expiration_date', $product->expiration_date);
         $stmt->bindParam(':description', $product->description);
         $stmt->bindParam(':stocks', $product->stocks);
-        $stmt->bindParam(':racks', $product->racks);
 
 
 
         if ($stmt->execute()) {
-
-            $last_id = $conn->lastInsertId();
-            $type = "Stock In";
-            $sql3 = "INSERT INTO stock_history (product_name, type, quantity, created_at, product_id) VALUES (:product_name, :type, :quantity, :created_at, :product_id)";
-            $stmt3 = $conn->prepare($sql3);
-            $created_at = date('Y-m-d');
-            $stmt3->bindParam(':product_name', $product->product_name);
-            $stmt3->bindParam(':type', $type);
-            $stmt3->bindParam(':quantity', $product->stocks);
-            $stmt3->bindParam(':created_at', $created_at);
-            $stmt3->bindParam(':product_id', $last_id);
-
-            $stmt3->execute();
-
             $response = [
                 "status" => "success",
                 "message" => "product successfully"
@@ -90,7 +74,7 @@ switch ($method) {
 
     case "PUT":
         $product = json_decode(file_get_contents('php://input'));
-        $sql = "UPDATE product SET product_name= :product_name, description = :description, expiration_date = :expiration_date, racks = :racks
+        $sql = "UPDATE product SET product_name= :product_name, description = :description, expiration_date = :expiration_date
                     WHERE product_id = :product_id";
 
         $stmt = $conn->prepare($sql);
@@ -99,7 +83,6 @@ switch ($method) {
         $stmt->bindParam(':product_name', $product->product_name);
         $stmt->bindParam(':description', $product->description);
         $stmt->bindParam(':expiration_date', $product->expiration_date);
-        $stmt->bindParam(':racks', $product->racks);
 
 
         if ($stmt->execute()) {
